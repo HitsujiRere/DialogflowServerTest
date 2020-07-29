@@ -11,12 +11,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-const omikujis = ['大吉', '中吉', '小吉', '吉'];
-app.post('/dialogflow/omikuji', (req, res) => {
-    const omikuji = omikujis[Math.floor(Math.random() * omikujis.length)];
+const kujis = ['大吉', '中吉', '小吉', '吉'];
+app.post('/dialogflow', (req, res) => {
+    console.log(req.action);
+
+    const kuji = kujis[Math.floor(Math.random() * kujis.length)];
     console.log(`omikuji=${omikuji}`);
     return res.json({
-        omikuji: omikuji
+        speech: `${omikuji}を引きました`,
+        displayText: `${omikuji}を引きました！`,
+        omikuji: kuji
     });
 });
 
