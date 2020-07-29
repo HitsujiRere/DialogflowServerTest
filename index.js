@@ -19,9 +19,8 @@ app.post('/dialogflow', (req, res) => {
     console.log(`omikuji=${kuji}`);
     res.send(
         JSON.stringify({
-            speech: `${kuji}を引きました`,
-            displayText: `${kuji}を引きました！`,
-            omikuji: kuji
+            'speech': `${kuji}を引きました`,
+            'displayText': `${kuji}を引きました！`,
         })
     );
 });
