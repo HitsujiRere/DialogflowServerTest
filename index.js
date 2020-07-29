@@ -10,10 +10,12 @@ app.use(bodyParser.urlencoded({
     extended: true,
 }));
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
 const PORT = process.env.PORT || 8000;
 
 let staffData = [];
+let memoData = [];
 
 async function loadStaffData() {
     const db = await getPostgresClient();
@@ -35,9 +37,67 @@ async function loadStaffData() {
     }
 }
 
-app.get("/staff", async (req, res) => {
+async function loadMemoData() {
+    const db = await getPostgresClient();
+    try {
+        const sql = `SELECT * FROM memo;`;
+        //const params = ['1', 'name'];
+
+        await db.begin();
+        const data = await db.execute(sql);
+        console.log(data);
+        memoData = data;
+        await db.commit();
+
+    } catch (e) {
+        await db.rollback();
+        throw e;
+    } finally {
+        await db.release();
+    }
+}
+
+app.get("/staff", (req, res) => {
     res.render('staff.ejs', {
         data: staffData,
+    });
+});
+
+app.get("/memo", (req, res) => {
+    res.render('memo.ejs', {
+        data: memoData,
+    });
+});
+
+app.post("/memo/send", async (req, res) => {
+    let result = "Failed...";
+
+    const title = req.body.title;
+    const body = req.body.body;
+
+    if (title !== "" || body !== "") {
+        const db = await getPostgresClient();
+        try {
+            const sql = `INSERT INTO memo VALUES (0, '${title}', now(), '${body}');`;
+            //const params = ['1', 'name'];
+
+            await db.begin();
+            await db.execute(sql);
+            await db.commit();
+            result = "Correct";
+
+        } catch (e) {
+            await db.rollback();
+            throw e;
+        } finally {
+            await db.release();
+        }
+
+        loadMemoData();
+    }
+
+    res.render('memo_send.ejs', {
+        result: result,
     });
 });
 
@@ -71,6 +131,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, async (req, res) => {
     console.log("Server is up and running...");
     loadStaffData();
+    loadMemoData();
 });
 
 const kujis = ["大吉", "中吉", "小吉", "吉"];

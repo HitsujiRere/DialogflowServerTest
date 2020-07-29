@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Memo</title>
+</head>
+
+<body>
+    <p><%= result %></p>
+    <p>5秒後に元に戻ります</p>
+    <script>
+        setTimeout(function () {
+            window.location.href = "/memo";
+        }, 5 * 1000);
+    </script>
+</body>
+
+</html>
