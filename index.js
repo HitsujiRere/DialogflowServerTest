@@ -13,15 +13,23 @@ app.use(bodyParser.json());
 
 const kujis = ['大吉', '中吉', '小吉', '吉'];
 app.post('/dialogflow', (req, res) => {
-    console.log(req.body);
+    const queryResult = req.body;
+    const displayName = queryResult.intent.displayName;
+    let js = {};
 
-    const kuji = kujis[Math.floor(Math.random() * kujis.length)];
-    console.log(`omikuji=${kuji}`);
-    res.send(
-        JSON.stringify({
+    if (displayName === 'Omikuji') {
+        const kuji = kujis[Math.floor(Math.random() * kujis.length)];
+        console.log(`omikuji=${kuji}`);
+        js = {
             'fulfillmentText': `${kuji}を引きました！`,
-        })
-    );
+        };
+    } else {
+        js = {
+            'fulfillmentText': `Node.jsから${queryResult.queryText}`,
+        };
+    }
+
+    res.send(JSON.stringify(js));
 });
 
 app.get('/', (req, res) => {
