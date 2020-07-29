@@ -13,14 +13,13 @@ app.use(bodyParser.json());
 
 const kujis = ['大吉', '中吉', '小吉', '吉'];
 app.post('/dialogflow', (req, res) => {
-    console.log(req.body.result);
+    console.log(req.body);
 
     const kuji = kujis[Math.floor(Math.random() * kujis.length)];
     console.log(`omikuji=${kuji}`);
     res.send(
         JSON.stringify({
-            'speech': `${kuji}を引きました`,
-            'displayText': `${kuji}を引きました！`,
+            'fulfillmentText': `${kuji}を引きました！`,
         })
     );
 });
