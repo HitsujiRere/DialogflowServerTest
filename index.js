@@ -2,9 +2,7 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-//const http = require('http');
-//const fs = require('fs');
-const { Client } = require('pg');
+const { getPostgresClient } = require('./postgres');
 require('dotenv').config();
 
 const app = express();
@@ -13,23 +11,35 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-const client = new Client({
-    host: process.env.ENV_HOST,
-    databese: process.env.ENV_DB,
-    user: process.env.ENV_USER,
-    port: 5432,
-    password: process.env.ENV_PASSWORD,
-    ssl: { rejectUnauthorized: false }
-});
-
-client.connect()
-    .then(() => console.log("Connected successfuly"))
-    .then(() => client.query("select * from staff;"))
-    .then(results => console.table(results.rows))
-    .catch((e => console.log(e)))
-    .finally((() => client.end()))
-
 const PORT = process.env.PORT || 8000;
+
+let staffData = [];
+
+async function loadStaffData() {
+    const db = await getPostgresClient();
+    try {
+        const sql = `SELECT * FROM staff;`;
+        //const params = ['1', 'name'];
+
+        await db.begin();
+        const data = await db.execute(sql);
+        console.log(data);
+        staffData = data;
+        await db.commit();
+
+    } catch (e) {
+        await db.rollback();
+        throw e;
+    } finally {
+        await db.release();
+    }
+}
+
+app.get("/staff", async (req, res) => {
+    res.render('staff.ejs', {
+        data: staffData,
+    });
+});
 
 app.post("/dialogflow", (req, res) => {
     const queryResult = req.body.queryResult;
@@ -58,8 +68,9 @@ app.get("/", (req, res) => {
     res.render("hello.ejs");
 });
 
-app.listen(PORT, (req, res) => {
+app.listen(PORT, async (req, res) => {
     console.log("Server is up and running...");
+    loadStaffData();
 });
 
 const kujis = ["大吉", "中吉", "小吉", "吉"];
