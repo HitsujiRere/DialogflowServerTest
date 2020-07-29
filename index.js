@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 const kujis = ['大吉', '中吉', '小吉', '吉'];
 app.post('/dialogflow', (req, res) => {
-    const queryResult = req.body;
+    const queryResult = req.body.queryResult;
     console.log(queryResult);
     const displayName = queryResult.intent.displayName;
     let js = {};
