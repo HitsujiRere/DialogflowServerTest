@@ -16,10 +16,10 @@ app.post('/dialogflow', (req, res) => {
     console.log(req.action);
 
     const kuji = kujis[Math.floor(Math.random() * kujis.length)];
-    console.log(`omikuji=${omikuji}`);
+    console.log(`omikuji=${kuji}`);
     return res.json({
-        speech: `${omikuji}を引きました`,
-        displayText: `${omikuji}を引きました！`,
+        speech: `${kuji}を引きました`,
+        displayText: `${kuji}を引きました！`,
         omikuji: kuji
     });
 });
