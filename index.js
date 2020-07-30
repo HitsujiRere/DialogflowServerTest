@@ -131,7 +131,11 @@ app.post("/dialogflow", (req, res) => {
     } else if (displayName === "PushMemo") {
         const name = 'dialogflow';
         const title = queryResult.queryText;
-        const datetime = queryResult.parameters['date-time'].date_time;
+        const datetimeObj = queryResult.parameters['date-time'];
+        const datetime = new Date(Date.parse(
+            typeof datetimeObj === 'string'
+                ? datetimeObj : datetimeObj.date_time
+        ));
         const doing = queryResult.parameters['memodoing'];
         console.log(datetime);
         console.log(doing);
@@ -173,5 +177,5 @@ function timeToString(timestamp) {
     const hours = timestamp.getHours();
     const minutes = timestamp.getMinutes();
     const seconds = timestamp.getSeconds();
-    return `${year} /${month}/${date} ${hours}: ${minutes}: ${seconds} `;
+    return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
 }
