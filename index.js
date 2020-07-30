@@ -69,22 +69,30 @@ app.get("/memo", (req, res) => {
     });
 });
 
+app.get("/memo/load", (req, res) => {
+    loadMemoData();
+    res.render('memo_send.ejs', {
+        result: "Correct!",
+    });
+});
+
 app.post("/memo/send", async (req, res) => {
     let result = "Failed...";
 
+    const name = req.body.name;
     const title = req.body.title;
     const body = req.body.body;
 
-    if (title !== "" || body !== "") {
+    if (name !== "", title !== "" || body !== "") {
         const db = await getPostgresClient();
         try {
-            const sql = `INSERT INTO memo VALUES (0, '${title}', now(), '${body}');`;
+            const sql = `INSERT INTO memo (name,title,time,body) VALUES ('${name}', '${title}', now(), '${body}');`;
             //const params = ['1', 'name'];
 
             await db.begin();
             await db.execute(sql);
             await db.commit();
-            result = "Correct";
+            result = "Correct!";
 
         } catch (e) {
             await db.rollback();

@@ -13,6 +13,7 @@
     <table>
         <tr>
             <th>id</th>
+            <th>name</th>
             <th>title</th>
             <th>time</th>
             <th>body</th>
@@ -20,6 +21,7 @@
         <% data.forEach((item) => { %>
         <tr>
             <td><%= item.id %></td>
+            <td><%= item.name %></td>
             <td><%= item.title %></td>
             <td><%= item.time %></td>
             <td><%= item.body %></td>
@@ -29,17 +31,19 @@
 
     <form action="/memo/send" method="post">
         <label>
+            <p>名前</p>
+            <input type="text" name="name">
+        </label>
+        <label>
             <p>タイトル</p>
             <input type="text" name="title">
         </label>
-        <br />
         <label>
             <p>本文</p>
             <textarea name="body" cols="40" rows="10"></textarea>
         </label>
         <br />
         <input type="submit" value="送信">
-        <input type="button" style="display: none;">
     </form>
 </body>
 
