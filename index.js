@@ -89,11 +89,11 @@ app.post("/memo/send", async (req, res) => {
     if (name !== "", title !== "" || body !== "") {
         const db = await getPostgresClient();
         try {
-            const sql = `INSERT INTO memo (name,title,time,body) VALUES ('${name}', '${title}', now(), '${body}');`;
-            //const params = ['1', 'name'];
+            const sql = `INSERT INTO memo (name,title,time,body) VALUES ($1, $2, now(), $3);`;
+            const params = [name, title, body];
 
             await db.begin();
-            await db.execute(sql);
+            await db.execute(sql, params);
             await db.commit();
             result = "Correct!";
 
