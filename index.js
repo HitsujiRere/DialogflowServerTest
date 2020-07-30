@@ -131,14 +131,19 @@ app.post("/dialogflow", (req, res) => {
     } else if (displayName === "PushMemo") {
         console.log(queryResult);
 
-        //const name = req.body.name;
-        //const title = req.body.title;
-        //const body = req.body.body;
+        const name = 'dialogflow';
+        const title = queryResult.queryText;
+        const date_time = queryResult.parameters.date_time;
+        const doing = queryResult.parameters.memo_doing;
+        const body = `${doing} : ${date_time}`;
 
-        //const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
+        const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
+        js = {
+            "fulfillmentText": `Memoに「${body}」と書き込みました`,
+        };
     } else {
         js = {
-            "fulfillmentText": `Node.jsから「${queryResult.queryText}」`,
+            "fulfillmentText": `Node.jsから「${queryResult.queryText} 」`,
         };
     }
 
@@ -168,5 +173,5 @@ function timeToString(timestamp) {
     const hours = timestamp.getHours();
     const minutes = timestamp.getMinutes();
     const seconds = timestamp.getSeconds();
-    return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
+    return `${year} /${month}/${date} ${hours}: ${minutes}: ${seconds} `;
 }
