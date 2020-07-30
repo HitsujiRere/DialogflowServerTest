@@ -133,7 +133,7 @@ app.post("/dialogflow", (req, res) => {
         const title = queryResult.queryText;
         const datetime = queryResult.parameters['date_time'];
         const doing = queryResult.parameters['memodoing'];
-        console.log(date_time);
+        console.log(datetime);
         console.log(doing);
         const body = `${doing} : ${datetime}`;
 
