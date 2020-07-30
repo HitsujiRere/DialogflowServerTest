@@ -45,6 +45,9 @@ async function loadMemoData() {
 
         await db.begin();
         const data = await db.execute(sql);
+        data.forEach((item) => {
+            item.time = timeToString(item.time);
+        });
         console.log(data);
         memoData = data;
         await db.commit();
@@ -146,4 +149,14 @@ const kujis = ["大吉", "中吉", "小吉", "吉"];
 function omikuji() {
     const kuji = kujis[Math.floor(Math.random() * kujis.length)];
     return kuji;
+}
+
+function timeToString(timestamp) {
+    const year = timestamp.getFullYear();
+    const month = timestamp.getMonth() + 1;
+    const date = timestamp.getDate();
+    const hours = timestamp.getHours();
+    const minutes = timestamp.getMinutes();
+    const seconds = timestamp.getSeconds();
+    return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
 }
