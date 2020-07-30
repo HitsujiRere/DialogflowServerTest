@@ -131,8 +131,8 @@ app.post("/dialogflow", (req, res) => {
     } else if (displayName === "PushMemo") {
         const name = 'dialogflow';
         const title = queryResult.queryText;
-        const date_time = queryResult.parameters.date_time;
-        const doing = queryResult.parameters.memodoing;
+        const date_time = queryResult.parameters['date_time'];
+        const doing = queryResult.parameters['memodoing'];
         console.log(date_time);
         console.log(doing);
         const body = `${doing} : ${date_time}`;
