@@ -3,7 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { getPostgresClient } = require('./postgres');
-require('dotenv').config();
+//require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.urlencoded({
@@ -60,6 +60,29 @@ async function loadMemoData() {
     }
 }
 
+async function pushMemoData(name, title, body) {
+    let correct = false;
+    const db = await getPostgresClient();
+    try {
+        const sql = `INSERT INTO memo (name,title,time,body) VALUES ($1, $2, now(), $3);`;
+        const params = [name, title, body];
+
+        await db.begin();
+        await db.execute(sql, params);
+        await db.commit();
+        correct = true;
+
+    } catch (e) {
+        await db.rollback();
+        throw e;
+    } finally {
+        await db.release();
+    }
+
+    loadMemoData();
+    return correct;
+}
+
 app.get("/staff", (req, res) => {
     res.render('staff.ejs', {
         data: staffData,
@@ -80,32 +103,11 @@ app.get("/memo/load", (req, res) => {
 });
 
 app.post("/memo/send", async (req, res) => {
-    let result = "Failed...";
-
     const name = req.body.name;
     const title = req.body.title;
     const body = req.body.body;
 
-    if (name !== "", title !== "" || body !== "") {
-        const db = await getPostgresClient();
-        try {
-            const sql = `INSERT INTO memo (name,title,time,body) VALUES ($1, $2, now(), $3);`;
-            const params = [name, title, body];
-
-            await db.begin();
-            await db.execute(sql, params);
-            await db.commit();
-            result = "Correct!";
-
-        } catch (e) {
-            await db.rollback();
-            throw e;
-        } finally {
-            await db.release();
-        }
-
-        loadMemoData();
-    }
+    const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
 
     res.render('memo_send.ejs', {
         result: result,
@@ -126,6 +128,14 @@ app.post("/dialogflow", (req, res) => {
             "fulfillmentText": `${kuji}を引きました！`,
             "kuji": kuji
         };
+    } else if (displayName === "PushMemo") {
+        console.log(queryResult);
+
+        //const name = req.body.name;
+        //const title = req.body.title;
+        //const body = req.body.body;
+
+        //const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
     } else {
         js = {
             "fulfillmentText": `Node.jsから「${queryResult.queryText}」`,
