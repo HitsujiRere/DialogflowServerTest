@@ -129,12 +129,12 @@ app.post("/dialogflow", (req, res) => {
             "kuji": kuji
         };
     } else if (displayName === "PushMemo") {
-        console.log(queryResult);
-
         const name = 'dialogflow';
         const title = queryResult.queryText;
-        const date_time = queryResult.parameters.date_time.date_time;
-        const doing = queryResult.parameters.memo_doing;
+        const date_time = queryResult.parameters.date_time;
+        const doing = queryResult.parameters.memodoing;
+        console.log(date_time);
+        console.log(doing);
         const body = `${doing} : ${date_time}`;
 
         const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
