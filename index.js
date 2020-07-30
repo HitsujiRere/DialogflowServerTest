@@ -25,7 +25,7 @@ async function loadStaffData() {
 
         await db.begin();
         const data = await db.execute(sql);
-        console.log(data);
+        //console.log(data);
         staffData = data;
         await db.commit();
 
@@ -48,7 +48,7 @@ async function loadMemoData() {
         data.forEach((item) => {
             item.time = timeToString(item.time);
         });
-        console.log(data);
+        //console.log(data);
         memoData = data;
         await db.commit();
 
@@ -131,11 +131,11 @@ app.post("/dialogflow", (req, res) => {
     } else if (displayName === "PushMemo") {
         const name = 'dialogflow';
         const title = queryResult.queryText;
-        const date_time = queryResult.parameters['date_time'];
+        const datetime = queryResult.parameters['date_time'];
         const doing = queryResult.parameters['memodoing'];
         console.log(date_time);
         console.log(doing);
-        const body = `${doing} : ${date_time}`;
+        const body = `${doing} : ${datetime}`;
 
         const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
         js = {
