@@ -121,13 +121,28 @@ app.post("/dialogflow", (req, res) => {
     const displayName = queryResult.intent.displayName;
     let js = {};
 
-    if (displayName === "Omikuji") {
-        const kuji = omikuji();
-        console.log(`omikuji = ${kuji}`);
-        js = {
-            "fulfillmentText": `${kuji}を引きました！`,
-            "kuji": kuji
-        };
+    if (displayName === "Game") {
+        const gameName = queryResult.parameters.game;
+        if (gameName === 'おみくじ') {
+            const kuji = omikuji();
+            js = {
+                "fulfillmentText": `${kuji}を引きました！`,
+            };
+        } else if (gameName === 'じゃんけん') {
+            const hand = janken();
+            js = {
+                "fulfillmentText": `${hand}！`,
+            };
+        } else if (gameName === '占い') {
+            const result = uranai();
+            js = {
+                "fulfillmentText": `${result}`,
+            };
+        } else {
+            js = {
+                "fulfillmentText": `なんのゲームか分かりませんでした...`,
+            };
+        }
     } else if (displayName === "PushMemo") {
         const name = 'dialogflow';
         const date = queryResult.parameters['date'];
@@ -163,6 +178,18 @@ const kujis = ["大吉", "中吉", "小吉", "吉"];
 function omikuji() {
     const kuji = kujis[Math.floor(Math.random() * kujis.length)];
     return kuji;
+}
+
+const jankenHands = ["ぐー", "ちょき", "ぱー"];
+function janken() {
+    const hand = jankenHands[Math.floor(Math.random() * jankenHands.length)];
+    return hand;
+}
+
+const uranaiResult = ["1", "2", "3", "4"];
+function uranai() {
+    const res = uranaiResult[Math.floor(Math.random() * uranaiResult.length)];
+    return res;
 }
 
 function timeToString(timestamp) {
