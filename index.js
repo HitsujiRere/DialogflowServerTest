@@ -130,16 +130,11 @@ app.post("/dialogflow", (req, res) => {
         };
     } else if (displayName === "PushMemo") {
         const name = 'dialogflow';
-        const title = queryResult.queryText;
-        const datetimeObj = queryResult.parameters['date-time'];
-        const datetime = new Date(Date.parse(
-            typeof datetimeObj === 'string'
-                ? datetimeObj : datetimeObj.date_time
-        ));
+        const date = queryResult.parameters['date'];
+        const time = queryResult.parameters['time'];
         const doing = queryResult.parameters['memodoing'];
-        console.log(datetime);
-        console.log(doing);
-        const body = `${doing} : ${datetime}`;
+        const title = `${doing} : ${date} ${time}`;
+        const body = `${doing} : ${date} ${time}`;
 
         const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
         js = {
