@@ -2,6 +2,7 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+
 const dialogflow = require('./dialogflow');
 const staff = require('./staff');
 const memo = require('./memo');
@@ -86,6 +87,16 @@ app.get('/daikichi/load', (req, res) => {
         result: 'Correct!',
         return_page: '/daikichi',
     });
+});
+
+app.use(function (req, res, next) {
+    res.status(404);
+    res.render('err404.ejs');
+});
+
+app.use(function (err, req, res, next) {
+    res.status(500);
+    res.render('err500.ejs');
 });
 
 app.listen(PORT, async (req, res) => {
