@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const daikichi = require('./daikichi');
 
@@ -6,7 +6,7 @@ exports.dialogflow = function (queryResult) {
     const displayName = queryResult.intent.displayName;
 
     switch (displayName) {
-        case "Game":
+        case 'Game':
             const gameName = queryResult.parameters.game;
 
             switch (gameName) {
@@ -25,7 +25,7 @@ exports.dialogflow = function (queryResult) {
                     return `なんのゲームか分かりませんでした...`;
             }
 
-        case "PushMemo":
+        case 'PushMemo':
             const name = 'dialogflow';
             const date = queryResult.parameters.date;
             const time = queryResult.parameters.time;
@@ -33,10 +33,10 @@ exports.dialogflow = function (queryResult) {
             const title = `${doing} : ${date} ${time}`;
             const body = `${doing} : ${date} ${time}`;
 
-            const result = pushMemoData(name, title, body) ? "Correct!" : "Failed...";
+            const result = pushMemoData(name, title, body) ? 'Correct!' : 'Failed...';
             return `Memoに「${body}」と書き込みました`;
 
-        case "Daikichi":
+        case 'Daikichi':
             const daikichiMessage = daikichi.daikichiData[Math.floor(Math.random() * daikichi.daikichiData.length)].message;
             return daikichiMessage;
 
@@ -45,19 +45,19 @@ exports.dialogflow = function (queryResult) {
     }
 }
 
-const kujis = ["大吉", "中吉", "小吉", "吉"];
+const kujis = ['大吉', '中吉', '小吉', '吉'];
 function omikuji() {
     const kuji = kujis[Math.floor(Math.random() * kujis.length)];
     return kuji;
 }
 
-const jankenHands = ["ぐー", "ちょき", "ぱー"];
+const jankenHands = ['ぐー', 'ちょき', 'ぱー'];
 function janken() {
     const hand = jankenHands[Math.floor(Math.random() * jankenHands.length)];
     return hand;
 }
 
-const uranaiResult = ["1", "2", "3", "4"];
+const uranaiResult = ['1', '2', '3', '4'];
 function uranai() {
     const res = uranaiResult[Math.floor(Math.random() * uranaiResult.length)];
     return res;

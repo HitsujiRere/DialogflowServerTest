@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const { getPostgresClient } = require('./postgres');
 
@@ -10,8 +10,7 @@ exports.loadDaikichiData = async function () {
         const sql = `SELECT * FROM daikichi;`;
 
         await db.begin();
-        const data = await db.execute(sql);
-        exports.daikichiData = data;
+        exports.daikichiData = await db.execute(sql);
         await db.commit();
 
     } catch (e) {
@@ -20,6 +19,8 @@ exports.loadDaikichiData = async function () {
     } finally {
         await db.release();
     }
+
+    console.log('Loaded daikichiData!');
 }
 
 exports.pushDaikichiData = async function (message) {

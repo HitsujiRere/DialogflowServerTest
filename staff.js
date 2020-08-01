@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const { getPostgresClient } = require('./postgres');
 
@@ -10,8 +10,7 @@ exports.loadStaffData = async function () {
         const sql = `SELECT * FROM staff;`;
 
         await db.begin();
-        const data = await db.execute(sql);
-        exports.staffData = data;
+        exports.staffData = await db.execute(sql);
         await db.commit();
 
     } catch (e) {
@@ -20,4 +19,6 @@ exports.loadStaffData = async function () {
     } finally {
         await db.release();
     }
+
+    console.log('Loaded staffData!');
 }

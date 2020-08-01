@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const { getPostgresClient } = require('./postgres');
 
@@ -10,11 +10,10 @@ exports.loadMemoData = async function () {
         const sql = `SELECT * FROM memo;`;
 
         await db.begin();
-        const data = await db.execute(sql);
-        data.forEach((item) => {
+        exports.memoData = await db.execute(sql);
+        exports.memoData.forEach((item) => {
             item.time = timeToString(item.time);
         });
-        exports.memoData = data;
         await db.commit();
 
     } catch (e) {
@@ -23,6 +22,8 @@ exports.loadMemoData = async function () {
     } finally {
         await db.release();
     }
+
+    console.log('Loaded memoData!');
 }
 
 exports.pushMemoData = async function (name, title, body) {
