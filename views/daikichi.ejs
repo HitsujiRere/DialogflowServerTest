@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>大吉メッセージ集</title>
+    <link rel="stylesheet" href="/css/memo.css">
+</head>
+
+<body>
+    <h1>大吉メッセージ</h1>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>メッセージ</th>
+        </tr>
+        <% data.forEach((item) => { %>
+        <tr>
+            <td><%= item.id %></td>
+            <td><%= item.message %></td>
+        </tr>
+        <% });%>
+    </table>
+
+    <form action="/daikichi/send" method="post">
+        <label>
+            <p>メッセージ</p>
+            <textarea name="message" cols="40" rows="10"></textarea>
+        </label>
+        <br />
+        <input type="submit" value="送信">
+    </form>
+</body>
+
+</html>

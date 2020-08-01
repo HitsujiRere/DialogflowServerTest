@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Memo</title>
+    <title>5秒後に元に戻ります</title>
 </head>
 
 <body>
@@ -11,7 +11,7 @@
     <p>5秒後に元に戻ります</p>
     <script>
         setTimeout(function () {
-            window.location.href = "/memo";
+            window.location.href = '<%= return_page %>';
         }, 5 * 1000);
     </script>
 </body>
