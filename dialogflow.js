@@ -31,7 +31,7 @@ exports.dialogflow = function (queryResult) {
             const time = queryResult.parameters.time;
             const doing = queryResult.parameters.memodoing;
             const title = `${doing} : ${date} ${time}`;
-            const body = `${doing} : ${date} ${time}`;
+            const body = `${doing} : ${date} ${time} ( ${queryResult.queryText} )`;
 
             const result = pushMemoData(name, title, body) ? 'Correct!' : 'Failed...';
             return `Memoに「${body}」と書き込みました`;
