@@ -1,6 +1,7 @@
 'use strict';
 
 const daikichi = require('./daikichi');
+const memo = require('./memo');
 
 exports.dialogflow = function (queryResult) {
     const displayName = queryResult.intent.displayName;
@@ -32,8 +33,10 @@ exports.dialogflow = function (queryResult) {
             const doing = queryResult.parameters.memodoing;
             const title = `${doing} : ${date} ${time}`;
             const body = `${doing} : ${date} ${time} ( ${queryResult.queryText} )`;
+            console.log(`body = ${title}`);
+            console.log(`body = ${body}`);
 
-            const result = pushMemoData(name, title, body) ? 'Correct!' : 'Failed...';
+            const result = memo.pushMemoData(name, title, body) ? 'Correct!' : 'Failed...';
             return `Memoに「${body}」と書き込みました`;
 
         case 'Daikichi':
