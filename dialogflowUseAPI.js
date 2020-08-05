@@ -137,8 +137,10 @@ const makeKeyJsonFile = () => {
 
     data.private_key = data.private_key.replace(/\\\\n/g, '\\n');
 
+    console.log(JSON.stringify(data, null, '  '));
+
     fs.writeFile(
-        "./dialogflow.json",
+        "dialogflow.json",
         JSON.stringify(data, null, '  '),
         (err) => {
             if (err == null) {
