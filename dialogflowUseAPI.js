@@ -135,12 +135,12 @@ const makeKeyJsonFile = () => {
         "client_x509_cert_url": process.env.CLIENT_x509_CERT_URL
     }
 
-    data.private_key = data.private_key.replace(/\\\\n/g, '\\n');
+    data.private_key = data.private_key.replace(/\\n/g, '\n');
 
     console.log(JSON.stringify(data, null, '  '));
 
     fs.writeFile(
-        "dialogflow.json",
+        process.env.GOOGLE_APPLICATION_CREDENTIALS,
         JSON.stringify(data, null, '  '),
         (err) => {
             if (err == null) {
