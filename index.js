@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const DialoglowAPI = require('./dialogflowUseAPI');
-const dialogflow = require('./dialogflowResponse');
+const dialogflowResponse = require('./dialogflowResponse');
 const staff = require('./staff');
 const memo = require('./memo');
 const daikichi = require('./daikichi');
@@ -28,7 +28,7 @@ app.post('/dialogflow', (req, res) => {
     console.log(queryResult);
 
     let js = {
-        'fulfillmentText': dialogflow.dialogflow(queryResult),
+        'fulfillmentText': dialogflowResponse.dialogflowResponse(queryResult),
     };
 
     res.send(JSON.stringify(js));
