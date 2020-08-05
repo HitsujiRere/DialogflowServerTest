@@ -3,7 +3,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const dialogflow = require('./dialogflow');
+const DialoglowAPI = require('./dialogflowUseAPI');
+const dialogflow = require('./dialogflowResponse');
 const staff = require('./staff');
 const memo = require('./memo');
 const daikichi = require('./daikichi');
@@ -89,6 +90,32 @@ app.get('/daikichi/load', (req, res) => {
     });
 });
 
+app.get('/webdemo', (req, res) => {
+    res.render('webdemo.ejs');
+})
+
+app.get('/dialogflow', (req, res) => {
+    res.render('dialogflow.ejs');
+
+    const queries = [
+        'おみくじ'
+    ]
+
+    DialoglowAPI.executeQueries(queries);
+})
+
+app.post('/dialogflow/send', async (req, res) => {
+    res.status(200);
+
+    const query = req.body.message;
+
+    const fulfillmentText = await DialoglowAPI.executeQuery(query);
+
+    console.log(fulfillmentText);
+
+    res.send(fulfillmentText);
+})
+
 app.use(function (req, res, next) {
     res.status(404);
     res.render('err404.ejs');
@@ -97,6 +124,7 @@ app.use(function (req, res, next) {
 app.use(function (err, req, res, next) {
     res.status(500);
     res.render('err500.ejs');
+    console.log(err);
 });
 
 app.listen(PORT, async (req, res) => {
@@ -104,4 +132,5 @@ app.listen(PORT, async (req, res) => {
     staff.loadStaffData();
     memo.loadMemoData();
     daikichi.loadDaikichiData();
+    DialoglowAPI.makeKeyJsonFile();
 });

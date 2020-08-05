@@ -3,7 +3,7 @@
 const daikichi = require('./daikichi');
 const memo = require('./memo');
 
-exports.dialogflow = function (queryResult) {
+exports.dialogflowResponse = function (queryResult) {
     const displayName = queryResult.intent.displayName;
 
     switch (displayName) {
