@@ -2,15 +2,17 @@
 
 const { getPostgresClient } = require('./postgres');
 
-exports.staffData = [];
+let staffData = [];
+exports.staffData = staffData;
 
-exports.loadStaffData = async function () {
+const loadStaffData = async () => {
     const db = await getPostgresClient();
     try {
         const sql = `SELECT * FROM staff;`;
 
         await db.begin();
-        exports.staffData = await db.execute(sql);
+        staffData = await db.execute(sql);
+        exports.staffData = staffData;
         await db.commit();
 
     } catch (e) {
@@ -22,3 +24,4 @@ exports.loadStaffData = async function () {
 
     console.log('Loaded staffData!');
 }
+exports.loadStaffData = loadStaffData;

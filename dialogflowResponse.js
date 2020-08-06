@@ -3,7 +3,7 @@
 const daikichi = require('./daikichi');
 const memo = require('./memo');
 
-exports.dialogflowResponse = function (queryResult) {
+const dialogflowResponse = (queryResult) => {
     const displayName = queryResult.intent.displayName;
 
     switch (displayName) {
@@ -47,21 +47,22 @@ exports.dialogflowResponse = function (queryResult) {
             return `Node.jsから「${queryResult.queryText} 」`;
     }
 }
+exports.dialogflowResponse = dialogflowResponse;
 
 const kujis = ['大吉', '中吉', '小吉', '吉'];
-function omikuji() {
+const omikuji = () => {
     const kuji = kujis[Math.floor(Math.random() * kujis.length)];
     return kuji;
 }
 
 const jankenHands = ['ぐー', 'ちょき', 'ぱー'];
-function janken() {
+const janken = () => {
     const hand = jankenHands[Math.floor(Math.random() * jankenHands.length)];
     return hand;
 }
 
 const uranaiResult = ['1', '2', '3', '4'];
-function uranai() {
+const uranai = () => {
     const res = uranaiResult[Math.floor(Math.random() * uranaiResult.length)];
     return res;
 }

@@ -18,11 +18,11 @@ app.use(express.static('public'));
 
 const PORT = process.env.PORT || 8000;
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     res.render('hello.ejs');
 });
 
-app.post('/dialogflow', (req, res) => {
+app.post('/dialogflow', async (req, res) => {
     const queryResult = req.body.queryResult;
     console.log('queryResult =');
     console.log(queryResult);
@@ -34,13 +34,13 @@ app.post('/dialogflow', (req, res) => {
     res.send(JSON.stringify(js));
 });
 
-app.get('/staff', (req, res) => {
+app.get('/staff', async (req, res) => {
     res.render('staff.ejs', {
         data: staff.staffData,
     });
 });
 
-app.get('/memo', (req, res) => {
+app.get('/memo', async (req, res) => {
     res.render('memo.ejs', {
         data: memo.memoData,
     });
@@ -66,7 +66,7 @@ app.get('/memo/load', async (req, res) => {
     });
 });
 
-app.get('/daikichi', (req, res) => {
+app.get('/daikichi', async (req, res) => {
     res.render('daikichi.ejs', {
         data: daikichi.daikichiData,
     });
@@ -82,7 +82,7 @@ app.post('/daikichi/send', async (req, res) => {
         return_page: '/daikichi',
     });
 });
-app.get('/daikichi/load', (req, res) => {
+app.get('/daikichi/load', async (req, res) => {
     daikichi.loadDaikichiData();
     res.render('page_return.ejs', {
         result: 'Correct!',
@@ -90,24 +90,16 @@ app.get('/daikichi/load', (req, res) => {
     });
 });
 
-app.get('/webdemo', (req, res) => {
+app.get('/webdemo', async (req, res) => {
     res.render('webdemo.ejs');
 });
 
-app.get('/dialogflow', (req, res) => {
+app.get('/dialogflow', async (req, res) => {
     res.render('dialogflow.ejs');
-
-    const queries = [
-        'おみくじ'
-    ]
-
-    DialoglowAPI.executeQueries(queries);
 });
-
-app.get('/dialogflow_talk', (req, res) => {
+app.get('/dialogflow_talk', async (req, res) => {
     res.render('dialogflow_talk.ejs');
 });
-
 app.post('/dialogflow/send', async (req, res) => {
     res.status(200);
 
@@ -120,12 +112,12 @@ app.post('/dialogflow/send', async (req, res) => {
     res.send(fulfillmentText);
 });
 
-app.use(function (req, res, next) {
+app.use(async (req, res, next) => {
     res.status(404);
     res.render('err404.ejs');
 });
 
-app.use(function (err, req, res, next) {
+app.use(async (err, req, res, next) => {
     res.status(500);
     res.render('err500.ejs');
     console.log(err);

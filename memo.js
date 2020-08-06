@@ -2,18 +2,20 @@
 
 const { getPostgresClient } = require('./postgres');
 
-exports.memoData = [];
+let memoData = [];
+exports.memoData = memoData;
 
-exports.loadMemoData = async function () {
+const loadMemoData = async () => {
     const db = await getPostgresClient();
     try {
         const sql = `SELECT * FROM memo;`;
 
         await db.begin();
-        exports.memoData = await db.execute(sql);
-        exports.memoData.forEach((item) => {
+        memoData = await db.execute(sql);
+        memoData.forEach((item) => {
             item.time = timeToString(item.time);
         });
+        exports.memoData = memoData;
         await db.commit();
 
     } catch (e) {
@@ -25,8 +27,9 @@ exports.loadMemoData = async function () {
 
     console.log('Loaded memoData!');
 }
+exports.loadMemoData = loadMemoData;
 
-exports.pushMemoData = async function (name, title, body) {
+const pushMemoData = async (name, title, body) => {
     let correct = false;
     const db = await getPostgresClient();
     try {
@@ -45,11 +48,12 @@ exports.pushMemoData = async function (name, title, body) {
         await db.release();
     }
 
-    exports.loadMemoData();
+    loadMemoData();
     return correct;
 }
+exports.pushMemoData = pushMemoData;
 
-function timeToString(timestamp) {
+const timeToString = (timestamp) => {
     const year = timestamp.getFullYear();
     const month = timestamp.getMonth() + 1;
     const date = timestamp.getDate();

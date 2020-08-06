@@ -2,15 +2,17 @@
 
 const { getPostgresClient } = require('./postgres');
 
-exports.daikichiData = [];
+let daikichiData = [];
+exports.daikichiData = daikichiData;
 
-exports.loadDaikichiData = async function () {
+const loadDaikichiData = async () => {
     const db = await getPostgresClient();
     try {
         const sql = `SELECT * FROM daikichi;`;
 
         await db.begin();
-        exports.daikichiData = await db.execute(sql);
+        daikichiData = await db.execute(sql);
+        exports.daikichiData = daikichiData;
         await db.commit();
 
     } catch (e) {
@@ -22,8 +24,9 @@ exports.loadDaikichiData = async function () {
 
     console.log('Loaded daikichiData!');
 }
+exports.loadDaikichiData = loadDaikichiData;
 
-exports.pushDaikichiData = async function (message) {
+const pushDaikichiData = async (message) => {
     let correct = false;
     const db = await getPostgresClient();
     try {
@@ -42,11 +45,12 @@ exports.pushDaikichiData = async function (message) {
         await db.release();
     }
 
-    exports.loadDaikichiData();
+    loadDaikichiData();
     return correct;
 }
+exports.pushDaikichiData = pushDaikichiData;
 
-function timeToString(timestamp) {
+const timeToString = (timestamp) => {
     const year = timestamp.getFullYear();
     const month = timestamp.getMonth() + 1;
     const date = timestamp.getDate();
