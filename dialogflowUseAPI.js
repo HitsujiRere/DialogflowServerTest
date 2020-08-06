@@ -67,6 +67,7 @@ async function executeQueries(queries) {
     // Keeping the context across queries let's us simulate an ongoing conversation with the bot
     let context;
     let intentResponse;
+    const fulfillmentTexts = [];
     for (const query of queries) {
         try {
             console.log(`Sending Query: ${query}`);
@@ -81,6 +82,8 @@ async function executeQueries(queries) {
             console.log(
                 `Fulfillment Text: ${intentResponse.queryResult.fulfillmentText}`
             );
+            fulfillmentTexts.push(intentResponse.queryResult.fulfillmentText);
+
             // Use the context from this response for next queries
             context = intentResponse.queryResult.outputContexts;
 
@@ -88,6 +91,8 @@ async function executeQueries(queries) {
             console.log(error);
         }
     }
+
+    return fulfillmentTexts;
 }
 
 async function executeQuery(query) {
@@ -109,6 +114,7 @@ async function executeQuery(query) {
             `Fulfillment Text: ${intentResponse.queryResult.fulfillmentText}`
         );
         fulfillmentText = intentResponse.queryResult.fulfillmentText;
+
         // Use the context from this response for next queries
         context = intentResponse.queryResult.outputContexts;
 

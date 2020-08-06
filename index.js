@@ -92,7 +92,7 @@ app.get('/daikichi/load', (req, res) => {
 
 app.get('/webdemo', (req, res) => {
     res.render('webdemo.ejs');
-})
+});
 
 app.get('/dialogflow', (req, res) => {
     res.render('dialogflow.ejs');
@@ -102,7 +102,11 @@ app.get('/dialogflow', (req, res) => {
     ]
 
     DialoglowAPI.executeQueries(queries);
-})
+});
+
+app.get('/dialogflow_talk', (req, res) => {
+    res.render('dialogflow_talk.ejs');
+});
 
 app.post('/dialogflow/send', async (req, res) => {
     res.status(200);
@@ -114,7 +118,7 @@ app.post('/dialogflow/send', async (req, res) => {
     console.log(fulfillmentText);
 
     res.send(fulfillmentText);
-})
+});
 
 app.use(function (req, res, next) {
     res.status(404);
