@@ -3,8 +3,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const DialoglowAPI = require('./dialogflowUseAPI');
+const DialoglowUseAPI = require('./dialogflowUseAPI');
 const dialogflowResponse = require('./dialogflowResponse');
+const dialogflowVoiceUse = require('./dialogflowVoiceUse');
 const staff = require('./staff');
 const memo = require('./memo');
 const daikichi = require('./daikichi');
@@ -105,11 +106,15 @@ app.post('/dialogflow/send', async (req, res) => {
 
     const query = req.body.message;
 
-    const fulfillmentText = await DialoglowAPI.executeQuery(query);
+    const fulfillmentText = await DialoglowUseAPI.executeQuery(query);
 
     console.log(fulfillmentText);
 
     res.send(fulfillmentText);
+});
+
+app.get('/dialogflow_voice', async (req, res) => {
+    res.render('dialogflow_voice.ejs');
 });
 
 app.use(async (req, res, next) => {
@@ -128,5 +133,5 @@ app.listen(PORT, async (req, res) => {
     staff.loadStaffData();
     memo.loadMemoData();
     daikichi.loadDaikichiData();
-    DialoglowAPI.makeKeyJsonFile();
+    DialoglowUseAPI.makeKeyJsonFile();
 });

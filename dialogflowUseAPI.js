@@ -51,9 +51,6 @@ async function detectIntent(
                 languageCode: languageCode,
             },
         },
-        outputAudioConfig: {
-            audioEncoding: 'OUTPUT_AUDIO_ENCODING_LINEAR_16',
-        },
     };
 
     if (contexts && contexts.length > 0) {
