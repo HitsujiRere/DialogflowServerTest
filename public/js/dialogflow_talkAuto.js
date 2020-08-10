@@ -1,8 +1,43 @@
 
 const xhr = new XMLHttpRequest();
 
-const sendMessageToDialogflow = () => {
-    const message = document.getElementById('messageInputee').value;
+const rec = new webkitSpeechRecognition();
+rec.continuous = false;
+rec.interimResults = false;
+rec.lang = 'ja-JP';
+
+rec.onresult = (e) => {
+    console.log('on result');
+    rec.stop();
+
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+        if (!e.results[i].isFinal) continue;
+
+        const { transcript } = e.results[i][0];
+        console.log(`Recognised: ${transcript}`);
+        sendMessageToDialogflow(transcript);
+    }
+};
+
+rec.onstart = () => { console.log('on start'); };
+rec.onend = () => {
+    console.log('on end');
+    rec.start();
+};
+
+rec.onspeechstart = () => { console.log('on speech start'); };
+rec.onspeechend = () => { console.log('on speech end'); };
+
+rec.onosundstart = () => { console.log('on sound start'); };
+rec.onsoundend = () => { console.log('on sound end'); };
+
+rec.onaudiostart = () => { console.log('on audio start'); };
+rec.onaudioend = () => { console.log('on audio end'); };
+
+rec.start();
+
+const sendMessageToDialogflow = (message) => {
+    //const message = document.getElementById('messageInputee').value;
     var data = {
         message: message,
     };

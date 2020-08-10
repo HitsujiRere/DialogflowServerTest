@@ -1,21 +1,36 @@
 'use strict';
 
 const express = require('express');
+const app = express();
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const http = require('http').createServer(app);
+const io = require('socket.io').listen(http);
+const cron = require('node-cron');
+const ss = require('socket.io-stream');
+const path = require('path');
+const fs = require('fs');
+const cors = require('cors');
+const { Transform, pipeline } = require('stream');
+const uuid = require('uuid');
+const util = require('util');
+const pump = util.promisify(pipeline);
 
 const DialoglowUseAPI = require('./dialogflowUseAPI');
 const dialogflowResponse = require('./dialogflowResponse');
 const dialogflowVoiceUse = require('./dialogflowVoiceUse');
+const dialogflowVoiceStream = require('./dialogflowVoiceStream');
 const staff = require('./staff');
 const memo = require('./memo');
 const daikichi = require('./daikichi');
 
-const app = express();
 app.use(bodyParser.urlencoded({
     extended: true,
 }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+const upload = multer({ dest: './uploads/' });
 
 const PORT = process.env.PORT || 8000;
 
@@ -116,6 +131,104 @@ app.post('/dialogflow/send', async (req, res) => {
 app.get('/dialogflow_voice', async (req, res) => {
     res.render('dialogflow_voice.ejs');
 });
+app.post('/dialogflow_voice/send', upload.any(), async (req, res, next) => {
+    console.log(req.files);
+    res.status(200).end();
+});
+
+app.get('/dialogflow_stream', async (req, res) => {
+    res.render('dialogflow_stream.ejs');
+});
+io.on('connect', (client) => {
+    console.log(`Client connected [id=${client.id}]`);
+    client.emit('server_setup', `Server connected [id=${client.id}]`);
+
+    // when the client sends 'message' events
+    // when using simple audio input
+    client.on('message', async (data) => {
+        console.log('message');
+        // we get the dataURL which was sent from the client
+        const dataURL = data.audio.dataURL.split(',').pop();
+        // we will convert it to a Buffer
+        let fileBuffer = Buffer.from(dataURL, 'base64');
+        // run the simple detectIntent() function
+        const results = await detectIntent(fileBuffer);
+        client.emit('results', results);
+    });
+
+    // when the client sends 'message' events
+    // when using simple audio input
+    client.on('message-transcribe', async (data) => {
+        console.log('message-transcribe');
+        // we get the dataURL which was sent from the client
+        const dataURL = data.audio.dataURL.split(',').pop();
+        // we will convert it to a Buffer
+        let fileBuffer = Buffer.from(dataURL, 'base64');
+        // run the simple transcribeAudio() function
+        const results = await transcribeAudio(fileBuffer);
+        client.emit('results', results);
+    });
+
+    // when the client sends 'stream' events
+    // when using audio streaming
+    ss(client).on('stream', (stream, data) => {
+        console.log('stream');
+        // get the name of the stream
+        const filename = path.basename(data.name);
+        // pipe the filename to the stream
+        stream.pipe(fs.createWriteStream(filename));
+        // make a detectIntStream call
+        detectIntentStream(stream, (results) => {
+            console.log(results);
+            client.emit('results', results);
+        });
+    });
+
+    // when the client sends 'stream-transcribe' events
+    // when using audio streaming
+    ss(client).on('stream-transcribe', (stream, data) => {
+        console.log('stream-transcribe');
+        // get the name of the stream
+        const filename = path.basename(data.name);
+        // pipe the filename to the stream
+        stream.pipe(fs.createWriteStream(filename));
+        // make a detectIntStream call
+        transcribeAudioStream(stream, (results) => {
+            console.log(results);
+            client.emit('results', results);
+        });
+    });
+
+    // when the client sends 'tts' events
+    ss(client).on('tts', (text) => {
+        console.log('tts');
+        textToAudioBuffer(text).then((results) => {
+            console.log(results);
+            client.emit('results', results);
+        }).catch((e) => {
+            console.log(e);
+        });
+    });
+
+    // when the client sends 'stream-media' events
+    // when using audio streaming
+    ss(client).on('stream-media', (stream, data) => {
+        console.log('stream-media');
+        // get the name of the stream
+        const filename = path.basename(data.name);
+        // pipe the filename to the stream
+        stream.pipe(fs.createWriteStream(filename));
+        // make a detectIntStream call
+        transcribeAudioMediaStream(stream, (results) => {
+            console.log(results);
+            client.emit('results', results);
+        });
+    });
+});
+
+app.get('/dialogflow_talkAuto', async (req, res) => {
+    res.render('dialogflow_talkAuto.ejs');
+});
 
 app.use(async (req, res, next) => {
     res.status(404);
@@ -128,7 +241,7 @@ app.use(async (err, req, res, next) => {
     console.log(err);
 });
 
-app.listen(PORT, async (req, res) => {
+http.listen(PORT, async (req, res) => {
     console.log('Server is up!');
     staff.loadStaffData();
     memo.loadMemoData();

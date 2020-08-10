@@ -3,17 +3,17 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Use Dialogflow Talk</title>
+    <title>Use Dialogflow Talk Auto</title>
 
-    <script type="text/javascript" src="/js/dialogflow_talk.js"></script>
+    <script type="text/javascript" src="/js/dialogflow_talkAuto.js"></script>
 </head>
 
 <body>
-    <h1>Use Dialogflow Talk</h1>
+    <h1>Use Dialogflow Talk Auto</h1>
 
     <p>メッセージ</p>
     <p id="comment"></p>
-    <form onsubmit="sendMessageToDialogflow(); return false;">
+    <form onsubmit="sendMessageToDialogflow(getElementById('messageInputee').value); return false;">
         <input type="text" id="messageInputee" size="20">
         <input type="submit" value="送信">
     </form>

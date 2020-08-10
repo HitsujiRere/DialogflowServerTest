@@ -143,7 +143,7 @@ const makeKeyJsonFile = () => {
 
     data.private_key = data.private_key.replace(/\\n/g, '\n');
 
-    console.log(JSON.stringify(data, null, '  '));
+    // console.log(JSON.stringify(data, null, '  '));
 
     fs.writeFile(
         process.env.GOOGLE_APPLICATION_CREDENTIALS,

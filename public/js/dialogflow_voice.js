@@ -3,6 +3,7 @@ const xhr = new XMLHttpRequest();
 
 // for html
 const downloadLink = document.getElementById('download');
+const startButton = document.getElementById('start');
 const stopButton = document.getElementById('stop');
 
 // for audio
@@ -14,18 +15,48 @@ let audioContext = null;
 let audioData = [];
 let bufferSize = 1024;
 
+startButton.addEventListener('click', () => {
+    startRecording();
+});
+
+// stop button
+stopButton.addEventListener('click', () => {
+    saveAudio();
+    console.log('saved wav');
+});
+
+const startRecording = () => {
+    // getUserMedia
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(handleSuccess);
+
+    startButton.disabled = true;
+    stopButton.disabled = false;
+}
+
 const saveAudio = () => {
-    downloadLink.href = exportWAV(audioData);
+    const audioBlob = exportBlob(audioData);
+
+    downloadLink.href = exportWAV(audioBlob);
     downloadLink.download = 'test.wav';
     downloadLink.click();
 
     audioContext.close().then(function () {
-        stopButton.setAttribute('disabled', 'disabled');
+        stopButton.disabled = true;
+        startButton.disabled = false;
     });
+
+    sendVoice(audioBlob);
+}
+
+const exportWAV = (audioBlob) => {
+    let myURL = window.URL || window.webkitURL;
+    let url = myURL.createObjectURL(audioBlob);
+    return url;
 }
 
 // export WAV from audio float data
-const exportWAV = (audioData) => {
+const exportBlob = (audioData) => {
 
     const encodeWAV = (samples, sampleRate) => {
         let buffer = new ArrayBuffer(44 + samples.length * 2);
@@ -82,16 +113,8 @@ const exportWAV = (audioData) => {
     let audioBlob = new Blob([dataview], { type: 'audio/wav' });
     console.log(dataview);
 
-    let myURL = window.URL || window.webkitURL;
-    let url = myURL.createObjectURL(audioBlob);
-    return url;
+    return audioBlob;
 };
-
-// stop button
-stopButton.addEventListener('click', function () {
-    saveAudio();
-    console.log('saved wav');
-});
 
 // save audio data
 const onAudioProcess = (e) => {
@@ -118,7 +141,7 @@ const handleSuccess = (stream) => {
     console.log('record start?');
 
     // when time passed without pushing the stop button
-    setTimeout(function () {
+    setTimeout(() => {
         console.log("10 sec");
         if (stopButton.disabled == false) {
             saveAudio();
@@ -127,58 +150,33 @@ const handleSuccess = (stream) => {
     }, 10000);
 };
 
-// getUserMedia
-navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then(handleSuccess);
 
 
+const sendVoice = (audioBlob) => {
 
-const sendMessageToDialogflow = () => {
-    const message = document.getElementById('messageInputee').value;
-    var data = {
-        message: message,
-    };
+    console.log(audioBlob);
 
-    const to = document.createElement('p');
-    to.innerHTML = `client : ${message}`;
-    document.getElementById('talks').appendChild(to);
+    xhr.open('POST', '/dialogflow_voice/send', true);
+    //xhr.responseType = 'blob';
+    const b = new Blob(['hello world'], { type: 'text/plain' });
+    xhr.send(audioBlob);
 
-    console.log(data);
-
-    xhr.open('POST', '/dialogflow/send', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send(EncodeHTMLForm(data));
-
-    const commentEl = document.getElementById('comment');
-    xhr.onload = function () {
-        commentEl.innerHTML = `Loaded: ${xhr.status} ${xhr.response}`;
+    xhr.onload = () => {
+        console.log(`Loaded: ${xhr.status} ${xhr.response}`);
 
         const from = document.createElement('p');
         from.innerHTML = `server : ${xhr.response}`;
         document.getElementById('talks').appendChild(from);
     };
 
-    xhr.onerror = function () { // リクエストがまったく送信できなかったときにだけトリガーされます。
-        commentEl.innerHTML = `Network Error`;
+    xhr.onerror = () => { // リクエストがまったく送信できなかったときにだけトリガーされます。
+        console.log(`Network Error`);
     };
 
-    xhr.onprogress = function (event) { // 定期的にトリガーされます
+    xhr.onprogress = () => { // 定期的にトリガーされます
         // event.loaded - ダウンロードされたバイト
         // event.lengthComputable = サーバが Content-Length ヘッダを送信した場合は true
         // event.total - トータルのバイト数(lengthComputable が true の場合)
-        commentEl.innerHTML = `Received ${event.loaded} of ${event.total}`;
+        console.log(`Received ${event.loaded} of ${event.total}`);
     };
 };
-
-function EncodeHTMLForm(data) {
-    var params = [];
-
-    for (var name in data) {
-        var value = data[name];
-        var param = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-
-        params.push(param);
-    }
-
-    return params.join('&').replace(/%20/g, '+');
-}
