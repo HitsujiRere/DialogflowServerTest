@@ -36,6 +36,12 @@ rec.onaudioend = () => { console.log('on audio end'); };
 
 rec.start();
 
+const Speech = (message) => {
+    const uttr = new SpeechSynthesisUtterance(message);
+
+    speechSynthesis.speak(uttr);
+}
+
 const sendMessageToDialogflow = (message) => {
     //const message = document.getElementById('messageInputee').value;
     var data = {
@@ -60,6 +66,8 @@ const sendMessageToDialogflow = (message) => {
         const from = document.createElement('p');
         from.innerHTML = `server : ${xhr.response}`;
         document.getElementById('talks').appendChild(from);
+
+        Speech(xhr.response);
     };
 
     xhr.onerror = function () { // リクエストがまったく送信できなかったときにだけトリガーされます。
