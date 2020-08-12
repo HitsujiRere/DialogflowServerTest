@@ -167,7 +167,7 @@ Licensed under the MIT license.
                     return res.data += chunk;
                 });
                 return res.on('end', function () {
-                    return done(null, new Buffer(res.data, 'binary'));
+                    return done(null, Buffer.from(res.data, 'binary'));
                 });
             }).end(function (e, res) {
                 var _ref;
