@@ -15,7 +15,7 @@ const { Transform, pipeline } = require('stream');
 const uuid = require('uuid');
 const util = require('util');
 const pump = util.promisify(pipeline);
-const VoiceText = require('voicetext');
+const VoiceText = require('./voicetext');
 
 const DialoglowUseAPI = require('./dialogflowUseAPI');
 const dialogflowResponse = require('./dialogflowResponse');
@@ -233,7 +233,6 @@ io.on('connect', (client) => {
 app.get('/dialogflow_talkAuto', async (req, res) => {
     res.render('dialogflow_talkAuto.ejs');
 });
-console.log(voicetext.SPEAKER);
 app.post('/dialogflow_talkAuto/voice', (req, res) => {
     const voiceMessage = req.body.message;
     const voiceSpeaker = req.body.speaker;
