@@ -15,6 +15,7 @@ const { Transform, pipeline } = require('stream');
 const uuid = require('uuid');
 const util = require('util');
 const pump = util.promisify(pipeline);
+const VoiceText = require('voicetext');
 
 const DialoglowUseAPI = require('./dialogflowUseAPI');
 const dialogflowResponse = require('./dialogflowResponse');
@@ -29,8 +30,11 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
+app.use(express.static('public'));
 
 const upload = multer({ dest: './uploads/' });
+
+const voicetext = new VoiceText(process.env.VOICE_TEXT_API_KEY);
 
 const PORT = process.env.PORT || 8000;
 
@@ -228,6 +232,34 @@ io.on('connect', (client) => {
 
 app.get('/dialogflow_talkAuto', async (req, res) => {
     res.render('dialogflow_talkAuto.ejs');
+});
+console.log(voicetext.SPEAKER);
+app.post('/dialogflow_talkAuto/voice', (req, res) => {
+    const voiceMessage = req.body.message;
+    const voiceSpeaker = req.body.speaker;
+
+    const voiceid = uuid.v4();
+    const voicename = `${voiceSpeaker}_${voiceid}.wav`;
+    const voicepath = `voices/${voicename}`;
+    voicetext
+        //.speaker(voicetext.SPEAKER.HARUKA)
+        .speaker(voiceSpeaker)
+        .speak(voiceMessage, (e, buf) => {
+            if (e) {
+                console.error(e);
+                res.status(500).end();
+            } else {
+                fs.writeFile(`./public/${voicepath}`, buf, 'binary', (e) => {
+                    if (e) {
+                        console.error(e);
+                        res.status(500).end();
+                    } else {
+                        console.log(`Maked ${voicepath}`);
+                        res.status(200).send(voicepath).end();
+                    }
+                });
+            }
+        });
 });
 
 app.use(async (req, res, next) => {

@@ -25,6 +25,8 @@ rec.onend = () => {
     rec.start();
 };
 
+// rec.onerror = (e) => { console.log(e); }
+
 rec.onspeechstart = () => { console.log('on speech start'); };
 rec.onspeechend = () => { console.log('on speech end'); };
 
@@ -37,14 +39,32 @@ rec.onaudioend = () => { console.log('on audio end'); };
 rec.start();
 
 const Speech = (message) => {
-    const uttr = new SpeechSynthesisUtterance(message);
+    //const uttr = new SpeechSynthesisUtterance(message);
+    //speechSynthesis.speak(uttr);
 
-    speechSynthesis.speak(uttr);
+    const speakerForm = document.getElementById('speakerInputedForm');
+    const speakerNumber = speakerForm.selectedIndex;
+    const speakerValue = speakerForm.options[speakerNumber].value;
+
+    const data = {
+        message: message,
+        speaker: speakerValue,
+    };
+
+    xhr.open('POST', '/dialogflow_talkAuto/voice', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send(EncodeHTMLForm(data));
+
+    xhr.onload = function () {
+        const audio = new Audio();
+        audio.src = xhr.response;
+        audio.play();
+    };
 }
 
 const sendMessageToDialogflow = (message) => {
-    //const message = document.getElementById('messageInputee').value;
-    var data = {
+    //const message = document.getElementById('messageInputedForm').value;
+    const data = {
         message: message,
     };
 

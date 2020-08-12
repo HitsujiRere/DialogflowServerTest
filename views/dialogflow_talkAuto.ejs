@@ -11,10 +11,22 @@
 <body>
     <h1>Use Dialogflow Talk Auto</h1>
 
+    <p>スピーカー</p>
+    <p>
+        <select id="speakerInputedForm">
+            <option value="show">しょう</option>
+            <option value="haruka">はるか</option>
+            <option value="hikari">ひかり</option>
+            <option value="takeru">たける</option>
+            <option value="santa">サンタ</option>
+            <option value="bear">クマ</option>
+        </select>
+    </p>
+
     <p>メッセージ</p>
     <p id="comment"></p>
-    <form onsubmit="sendMessageToDialogflow(getElementById('messageInputee').value); return false;">
-        <input type="text" id="messageInputee" size="20">
+    <form onsubmit="sendMessageToDialogflow(getElementById('messageInputedForm').value); return false;">
+        <input type="text" id="messageInputedForm" size="20">
         <input type="submit" value="送信">
     </form>
 
