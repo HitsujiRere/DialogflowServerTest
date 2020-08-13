@@ -237,28 +237,35 @@ app.post('/dialogflow_talkAuto/voice', (req, res) => {
     const voiceMessage = req.body.message;
     const voiceSpeaker = req.body.speaker;
 
-    const voiceid = uuid.v4();
-    const voicename = `${voiceSpeaker}_${voiceid}.wav`;
+    //const voiceid = uuid.v4();
+    const voicename = `${voiceSpeaker}_${voiceMessage}.wav`;
     const voicepath = `voices/${voicename}`;
-    voicetext
-        //.speaker(voicetext.SPEAKER.HARUKA)
-        .speaker(voiceSpeaker)
-        .speak(voiceMessage, (e, buf) => {
-            if (e) {
-                console.error(e);
-                res.status(500).end();
-            } else {
-                fs.writeFile(`./public/${voicepath}`, buf, 'binary', (e) => {
+
+    fs.stat(`./public/${voicepath}`, (err) => {
+        if (err) {
+            voicetext
+                //.speaker(voicetext.SPEAKER.HARUKA)
+                .speaker(voiceSpeaker)
+                .speak(voiceMessage, (e, buf) => {
                     if (e) {
                         console.error(e);
                         res.status(500).end();
                     } else {
-                        console.log(`Maked ${voicepath}`);
-                        res.status(200).send(voicepath).end();
+                        fs.writeFile(`./public/${voicepath}`, buf, 'binary', (e) => {
+                            if (e) {
+                                console.error(e);
+                                res.status(500).end();
+                            } else {
+                                console.log(`Maked ${voicepath}`);
+                                res.status(200).send(voicepath).end();
+                            }
+                        });
                     }
                 });
-            }
-        });
+        } else {
+            res.status(200).send(voicepath).end();
+        }
+    });
 });
 
 app.use(async (req, res, next) => {
