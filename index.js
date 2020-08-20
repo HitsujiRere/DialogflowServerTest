@@ -30,7 +30,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
-app.use(express.static('public'));
 
 const upload = multer({ dest: './uploads/' });
 
@@ -266,6 +265,10 @@ app.post('/dialogflow_talkAuto/voice', (req, res) => {
             res.status(200).send(voicepath).end();
         }
     });
+});
+
+app.post('/post-test', async (req, res) => {
+    console.log(req.body);
 });
 
 app.use(async (req, res, next) => {
